@@ -20,6 +20,8 @@ const DroneSimulator = () => {
     "LEFT"
   );
 
+  const [command, setCommand] = useState<string>("READY TO GO!")
+
   const isLaunchEnabled =
     xInput &&
     yInput &&
@@ -60,12 +62,17 @@ const DroneSimulator = () => {
         if (drone.isFlying) {
           // eslint-disable-next-line prefer-const
           let { x, y, direction } = drone;
-          if (direction === "SOUTH" && y < 4) y++;
-          if (direction === "NORTH" && y > 0) y--;
-          if (direction === "WEST" && x < 4) x--;
-          if (direction === "EAST" && x > 0) x++;
-          setDrone({ x, y, direction, isFlying: true });
-          toast.info("Drone moved!");
+          console.log(x, y, direction)
+          if ((x == 4 && direction === "EAST") || (x == 0 && direction === "WEST") || (y <= 0 && direction === "NORTH") || (y >= 4 && direction === "SOUTH")) {
+            toast.error("Drone can't move outside the area!")
+          } else {
+            if (direction === "SOUTH" && y <= 4) y++;
+            if (direction === "NORTH" && y >= 0) y--;
+            if (direction === "WEST" && x <= 4) x--;
+            if (direction === "EAST" && x >= 0) x++;
+            setDrone({ x, y, direction, isFlying: true });
+            toast.info("Drone moved!");
+          }
         } else {
           toast.warning("Drone is not launched yet!");
         }
@@ -101,6 +108,8 @@ const DroneSimulator = () => {
       direction: "NORTH",
       isFlying: false,
     });
+    setXInput("");
+    setYInput("");
     toast.success("Drone position reset to start!");
   };
 
@@ -117,15 +126,14 @@ const DroneSimulator = () => {
             {drone.x === j && drone.y === i && (
               <div className="w-6 h-6 bg-green-500 rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                 <div
-                  className={`absolute top-1/2 left-1/2 w-0 h-0 transform ${
-                    drone.direction === "NORTH"
-                      ? "rotate-270 -translate-x-2"
-                      : drone.direction === "EAST"
+                  className={`absolute top-1/2 left-1/2 w-0 h-0 transform ${drone.direction === "NORTH"
+                    ? "rotate-270 -translate-x-2"
+                    : drone.direction === "EAST"
                       ? "rotate-0 -translate-y-2"
                       : drone.direction === "SOUTH"
-                      ? "rotate-90 translate-x-2"
-                      : "rotate-180 translate-y-2"
-                  }`}
+                        ? "rotate-90 translate-x-2"
+                        : "rotate-180 translate-y-2"
+                    }`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -160,10 +168,12 @@ const DroneSimulator = () => {
     if (rotationDirection === "LEFT") {
       const newDirIndex = (DIRECTIONS.indexOf(drone.direction) + 3) % 4;
       setDrone({ ...drone, direction: DIRECTIONS[newDirIndex] });
+      setCommand("LEFT");
       toast.info("Drone turned left!");
     } else if (rotationDirection === "RIGHT") {
       const newDirIndex = (DIRECTIONS.indexOf(drone.direction) + 1) % 4;
       setDrone({ ...drone, direction: DIRECTIONS[newDirIndex] });
+      setCommand("RIGHT")
       toast.info("Drone turned right!");
     }
   };
@@ -171,7 +181,7 @@ const DroneSimulator = () => {
   return (
     <div className="min-h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-8">
       <div className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-lg">
-        <h1 className="text-2xl font-bold text-center text-white mb-6">
+        <h1 className="text-2xl font-bold text-center mb-6">
           Drone Simulator
         </h1>
 
@@ -195,13 +205,13 @@ const DroneSimulator = () => {
 
         {/* Launch Button */}
         <button
-          onClick={() =>
-            handleCommand(`LAUNCH ${xInput},${yInput},${drone.direction}`)
-          }
+          onClick={() => {
+            handleCommand(`LAUNCH ${xInput},${yInput},${drone.direction}`);
+            setCommand(`LAUNCH ${xInput},${yInput},${drone.direction}`);
+          }}
           disabled={!isLaunchEnabled}
-          className={`w-full py-3 mb-4 ${
-            isLaunchEnabled ? "bg-green-500" : "bg-gray-300"
-          } text-white rounded-lg`}
+          className={`w-full py-3 mb-4 ${isLaunchEnabled ? "bg-green-500" : "bg-gray-300"
+            } text-white rounded-lg`}
         >
           Launch Drone
         </button>
@@ -230,20 +240,31 @@ const DroneSimulator = () => {
 
         {/* Fly Button */}
         <button
-          onClick={() => handleCommand("FLY")}
+          onClick={() => {
+            handleCommand("FLY");
+            setCommand("FLY");
+          }}
           disabled={!drone.isFlying}
-          className={`w-full py-3 ${
-            drone.isFlying ? "bg-blue-500" : "bg-gray-300"
-          } text-white rounded-lg`}
+          className={`w-full py-3 ${drone.isFlying ? "bg-blue-500" : "bg-gray-300"
+            } text-white rounded-lg`}
         >
           Fly Drone
         </button>
 
         <button
-          onClick={() => handleCommand("STATUS")}
+          onClick={() => {
+            handleCommand("STATUS");
+            setCommand("STATUS");
+          }}
           className={"w-full mt-3 py-3 bg-green-500 text-white rounded-lg"}
         >
           Drone Status
+        </button>
+        <button
+          onClick={() => toast.info(`The command is: ${command}`)}
+          className={"w-full mt-3 py-3 bg-indigo-500 text-white rounded-lg"}
+        >
+          Last Command
         </button>
 
         {/* Coordinate Grid */}
