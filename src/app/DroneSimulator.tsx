@@ -124,7 +124,7 @@ const DroneSimulator = () => {
             className="w-12 h-12 border border-gray-300 relative"
           >
             {drone.x === j && drone.y === i && (
-              <div className="w-6 h-6 bg-green-500 rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+              <div className="w-6 h-6 bg-sky-500 rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                 <div
                   className={`absolute top-1/2 left-1/2 w-0 h-0 transform ${drone.direction === "NORTH"
                     ? "rotate-270 -translate-x-2"
@@ -140,7 +140,7 @@ const DroneSimulator = () => {
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    className="w-4 h-4 text-red-500"
+                    className="w-4 h-4 text-indigo-800"
                   >
                     <path
                       strokeLinecap="round"
