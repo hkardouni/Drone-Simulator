@@ -16,6 +16,7 @@ const DroneSimulator = () => {
 
   const [xInput, setXInput] = useState<string>("");
   const [yInput, setYInput] = useState<string>("");
+  const [initialDirection, setInitialDirection] = useState<Direction>("NORTH");
   const [rotationDirection, setRotationDirection] = useState<"LEFT" | "RIGHT">(
     "LEFT"
   );
@@ -201,12 +202,21 @@ const DroneSimulator = () => {
             placeholder="Enter Y (0-4)"
             className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
+          <select
+            value={initialDirection}
+            onChange={(e) => setInitialDirection(e.target.value as Direction)}
+            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            {DIRECTIONS.map((dir) => (
+              <option key={dir} value={dir}>{dir}</option>
+            ))}
+          </select>
         </div>
 
         {/* Launch Button */}
         <button
           onClick={() => {
-            handleCommand(`LAUNCH ${xInput},${yInput},${drone.direction}`);
+            handleCommand(`LAUNCH ${xInput},${yInput},${initialDirection}`);
             setCommand(`LAUNCH ${xInput},${yInput},${drone.direction}`);
           }}
           disabled={!isLaunchEnabled}
